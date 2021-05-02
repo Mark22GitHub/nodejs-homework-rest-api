@@ -1,20 +1,87 @@
-// const fs = require('fs/promises')
-// const contacts = require('./contacts.json')
+const fs = require("fs/promises");
+const path = require("path");
+const contactsJSON = path.join(__dirname, "./contacts.json");
 
-const listContacts = async () => {}
+//GET
+const listContacts = async () => {
+  try {
+    const contacts = await fs.readFile(contactsJSON, "utf-8");
+    return JSON.parse(contacts);
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
-const getContactById = async (contactId) => {}
+//GET
+const getById = async (contactId) => {
+  try {
+    const contacts = await listContacts();
+    const ContactId = contacts.find(
+      (contact) => String(contact.id) === contactId
+    );
+    return ContactId;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
-const removeContact = async (contactId) => {}
+//DELETE
+const removeContact = async (contactId) => {
+  try {
+    const contacts = await listContacts();
+    const contactIndex = contacts.findIndex(
+      (contact) => String(contact.id) === contactId
+    );
+    const deleteContact = contacts.filter(
+      (contact) => String(contact.id) !== contactId
+    );
+    const stringifiedDeletedContact = JSON.stringify(deleteContact);
+    await fs.writeFile(contactsJSON, stringifiedDeletedContact);
+    return contactIndex;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
-const addContact = async (body) => {}
+//POST
+const addContact = async (body) => {
+  try {
+    const contacts = await listContacts();
+    const newListContacts = [...contacts, body];
+    const stringifiedCreatedContact = JSON.stringify(newListContacts);
+    await fs.writeFile(contactsJSON, stringifiedCreatedContact);
+    return newListContacts;
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
-const updateContact = async (contactId, body) => {}
+//PUT
+const updateContact = async (contactId, body) => {
+  try {
+    const contacts = await listContacts();
+    const newContact = {
+      id: contactId,
+      ...body,
+    };
+    const updatedContacts = contacts.map((contact) =>
+      String(contact.id) === newContact.id ? { ...newContact } : contact
+    );
+    const contactIndex = updatedContacts.findIndex(
+      (contact) => String(contact.id) === contactId
+    );
+    const stringifiedUpdatedContact = JSON.stringify(updatedContacts);
+    await fs.writeFile(contactsJSON, stringifiedUpdatedContact);
+    return updatedContacts[contactIndex];
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
 module.exports = {
   listContacts,
-  getContactById,
+  getById,
   removeContact,
   addContact,
   updateContact,
-}
+};
