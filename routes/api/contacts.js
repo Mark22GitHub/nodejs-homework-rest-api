@@ -4,7 +4,11 @@ const router = express.Router();
 const modelContacts = require("../../model/index");
 const { v4: uuidv4 } = require("uuid");
 const Joi = require("joi");
-const { validate } = require("../helpers/validate");
+const {
+  validate,
+  createContactSchema,
+  updateContactSchema,
+} = require("../helpers/validate");
 
 //GET
 router.get("/", async (req, res, next) => {
@@ -37,11 +41,11 @@ router.get("/:contactId", async (req, res, next) => {
 });
 
 //POST
-const createContactSchema = Joi.object({
-  name: Joi.string(),
-  email: Joi.string().email(),
-  phone: Joi.string(),
-});
+// const createContactSchema = Joi.object({
+//   name: Joi.string(),
+//   email: Joi.string().email(),
+//   phone: Joi.string(),
+// });
 router.post("/", validate(createContactSchema), async (req, res, next) => {
   const { name, email, phone } = req.body;
   const body = { name, email, phone };
@@ -82,11 +86,11 @@ router.delete("/:contactId", async (req, res, next) => {
 });
 
 //PUT
-const updateContactSchema = Joi.object({
-  name: Joi.string(),
-  email: Joi.string().email(),
-  phone: Joi.string(),
-}).min(1);
+// const updateContactSchema = Joi.object({
+//   name: Joi.string(),
+//   email: Joi.string().email(),
+//   phone: Joi.string(),
+// }).min(1);
 
 router.put(
   "/:contactId",
