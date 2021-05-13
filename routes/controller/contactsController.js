@@ -3,6 +3,8 @@ const {
   validate,
   createContactSchema,
   updateContactSchema,
+  updateStatusContactSchema,
+  validateIDSchema,
 } = require("../helpers/validate");
 
 //GET
@@ -22,41 +24,38 @@ const getContactsController = async (req, res, next) => {
 };
 
 //GETBYID
-const getContactByIdController = async (req, res, next) => {
-  const { contactId } = req.params;
+const getContactByIdController =
+  (validate(validateIDSchema, "params"),
+  async (req, res, next) => {
+    const { contactId } = req.params;
 
-  try {
-    const contactById = await contactsDB.getContactByID(contactId);
+    try {
+      const contactById = await contactsDB.getContactByID(contactId);
 
-    if (contactById) {
-      res.status(200).json({
-        message: "Get contact by ID",
-        data: {
-          contactById,
-        },
-      });
-    } else {
-      res.status(404).json({
-        message: "Not found",
-      });
+      if (contactById) {
+        res.status(200).json({
+          message: "Get contact by ID",
+          data: {
+            contactById,
+          },
+        });
+      } else {
+        res.status(404).json({
+          message: "Contact was not found",
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      next(e);
     }
-  } catch (e) {
-    console.error(e);
-    next(e);
-  }
-};
+  });
 
 //POST
-// const createContactSchema = Joi.object({
-//   name: Joi.string(),
-//   email: Joi.string().email(),
-//   phone: Joi.string(),
-// });
 const createContactController =
   (validate(createContactSchema),
   async (req, res, next) => {
-    const { name, email, phone } = req.body;
-    const body = { name, email, phone };
+    const { name, email, phone, favorite = false } = req.body;
+    const body = { name, email, phone, favorite };
 
     try {
       const newContact = await contactsDB.createContact(body);
@@ -80,36 +79,33 @@ const createContactController =
   });
 
 //DELETE
-const deleteContactController = async (req, res, next) => {
-  const { contactId } = req.params;
+const deleteContactController =
+  (validate(validateIDSchema, "params"),
+  async (req, res, next) => {
+    const { contactId } = req.params;
 
-  try {
-    const deletedContact = await contactsDB.deleteContact(contactId);
+    try {
+      const deletedContact = await contactsDB.deleteContact(contactId);
 
-    if (deletedContact !== -1) {
-      res.status(200).json({
-        message: "Contact deleted",
-      });
-    } else {
-      res.status(404).json({
-        message: "Not found",
-      });
+      if (deletedContact !== -1) {
+        res.status(200).json({
+          message: "Contact deleted",
+        });
+      } else {
+        res.status(404).json({
+          message: "Not found",
+        });
+      }
+    } catch (e) {
+      console.error(e);
+      next(e);
     }
-  } catch (e) {
-    console.error(e);
-    next(e);
-  }
-};
+  });
 
 //PUT
-// const updateContactSchema = Joi.object({
-//   name: Joi.string(),
-//   email: Joi.string().email(),
-//   phone: Joi.string(),
-// }).min(1);
-
 const updateContactController =
   (validate(updateContactSchema),
+  validate(validateIDSchema, "params"),
   async (req, res, next) => {
     const { contactId } = req.params;
     const { name, email, phone } = req.body;
@@ -142,33 +138,44 @@ const updateContactController =
     }
   });
 
-//   PATCH
+// PATCH
+const updateFavoriteController =
+  (validate(updateStatusContactSchema),
+  validate(validateIDSchema, "params"),
+  async (req, res, next) => {
+    const { contactId } = req.params;
+    const { favorite = false } = req.body;
+    const body = { favorite };
 
-// const updateFavoriteController = async (req, res, next) => {
-//   const { id } = req.params;
-//   const { isDone = false } = req.body;
+    try {
+      if (!body) {
+        res.status(400).json({
+          message: "missing field favorite",
+        });
+      } else {
+        const updatedFavorite = await contactsDB.updateStatusContact(
+          contactId,
+          body
+        );
 
-//   try {
-//     const result = await service.updateTask(id, { isDone });
-//     if (result) {
-//       res.json({
-//         status: "success",
-//         code: 200,
-//         data: { task: result },
-//       });
-//     } else {
-//       res.status(404).json({
-//         status: "error",
-//         code: 404,
-//         message: `Not found task id: ${id}`,
-//         data: "Not Found",
-//       });
-//     }
-//   } catch (e) {
-//     console.error(e);
-//     next(e);
-//   }
-// };
+        if (updatedFavorite) {
+          res.status(200).json({
+            message: "Contact status was successfuly updated",
+            data: {
+              updatedFavorite,
+            },
+          });
+        } else {
+          res.status(404).json({
+            message: "Not found",
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      next(e);
+    }
+  });
 
 module.exports = {
   getContactsController,
@@ -176,4 +183,5 @@ module.exports = {
   createContactController,
   deleteContactController,
   updateContactController,
+  updateFavoriteController,
 };

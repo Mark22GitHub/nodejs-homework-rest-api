@@ -1,4 +1,5 @@
 const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
 
 exports.validate = (schema, reqPart = "body") => {
   return (req, res, next) => {
@@ -16,6 +17,7 @@ exports.createContactSchema = Joi.object({
   name: Joi.string(),
   email: Joi.string().email(),
   phone: Joi.string(),
+  favorite: Joi.bool(),
 });
 
 exports.updateContactSchema = Joi.object({
@@ -23,3 +25,11 @@ exports.updateContactSchema = Joi.object({
   email: Joi.string().email(),
   phone: Joi.string(),
 }).min(1);
+
+exports.updateStatusContactSchema = Joi.object({
+  favorite: Joi.bool(),
+});
+
+exports.validateIDSchema = Joi.object({
+  contactId: Joi.objectId(),
+});

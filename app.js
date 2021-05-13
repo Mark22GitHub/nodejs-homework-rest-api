@@ -24,14 +24,4 @@
 //   res.status(500).json({ message: err.message });
 // });
 
-// const uriDb = process.env.DB_HOST;
-
-// const connectionToMongoDB = mongoose.connect(uriDb, {
-//   promiseLibrary: global.Promise,
-//   useNewUrlParser: true,
-//   useCreateIndex: true,
-//   useUnifiedTopology: true,
-//   useFindAndModify: false,
-// });
-
 // module.exports = app;
