@@ -1,3 +1,5 @@
+const Joi = require("joi");
+
 exports.validate = (schema, reqPart = "body") => {
   return (req, res, next) => {
     const { error } = schema.validate(req[reqPart]);
