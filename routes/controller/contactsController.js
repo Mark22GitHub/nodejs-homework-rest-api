@@ -109,28 +109,30 @@ const updateContactController =
   async (req, res, next) => {
     const { contactId } = req.params;
     const { name, email, phone } = req.body;
-    const body = { name, email, phone };
 
     try {
-      if (!name || !email || !phone) {
-        res.status(400).json({
-          message: "missing fields",
+      // if (!name || !email || !phone) {
+      //   res.status(400).json({
+      //     message: "missing fields",
+      //   });
+      // }
+
+      const updatedContact = await contactsDB.updateContact(
+        contactId,
+        req.body
+      );
+
+      if (updatedContact) {
+        res.status(200).json({
+          message: "Contact was successfuly updated",
+          data: {
+            updatedContact,
+          },
         });
       } else {
-        const updatedContact = await contactsDB.updateContact(contactId, body);
-
-        if (updatedContact) {
-          res.status(200).json({
-            message: "Contact was successfuly updated",
-            data: {
-              updatedContact,
-            },
-          });
-        } else {
-          res.status(404).json({
-            message: "Not found",
-          });
-        }
+        res.status(404).json({
+          message: "Not found",
+        });
       }
     } catch (e) {
       console.error(e);
