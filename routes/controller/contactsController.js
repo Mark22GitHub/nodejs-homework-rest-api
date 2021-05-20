@@ -9,8 +9,9 @@ const {
 
 //GET
 const getContactsController = async (req, res, next) => {
+  const userId = req.userId;
   try {
-    const contacts = await contactsDB.getContacts();
+    const contacts = await contactsDB.getContacts(userId);
     res.status(200).json({
       message: "List of all contacts",
       data: {
@@ -30,7 +31,8 @@ const getContactByIdController =
     const { contactId } = req.params;
 
     try {
-      const contactById = await contactsDB.getContactByID(contactId);
+      const userId = req.userId;
+      const contactById = await contactsDB.getContactByID(userId, contactId);
 
       if (contactById) {
         res.status(200).json({
@@ -58,7 +60,8 @@ const createContactController =
     const body = { name, email, phone, favorite };
 
     try {
-      const newContact = await contactsDB.createContact(body);
+      const userId = req.userId;
+      const newContact = await contactsDB.createContact(userId, body);
 
       if (!name || !email || !phone) {
         res.status(400).json({
@@ -85,7 +88,8 @@ const deleteContactController =
     const { contactId } = req.params;
 
     try {
-      const deletedContact = await contactsDB.deleteContact(contactId);
+      const userId = req.userId;
+      const deletedContact = await contactsDB.deleteContact(userId, contactId);
 
       if (deletedContact !== -1) {
         res.status(200).json({
@@ -117,7 +121,9 @@ const updateContactController =
       //   });
       // }
 
+      const userId = req.userId;
       const updatedContact = await contactsDB.updateContact(
+        userId,
         contactId,
         req.body
       );
@@ -155,7 +161,9 @@ const updateFavoriteController =
           message: "missing field favorite",
         });
       } else {
+        const userId = req.userId;
         const updatedFavorite = await contactsDB.updateStatusContact(
+          userId,
           contactId,
           body
         );

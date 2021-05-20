@@ -33,3 +33,21 @@ exports.updateStatusContactSchema = Joi.object({
 exports.validateIDSchema = Joi.object({
   contactId: Joi.objectId(),
 });
+
+exports.signUpValidationSchema = Joi.object({
+  email: Joi.string()
+    .required()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } }),
+
+  password: Joi.string()
+    .required()
+    .pattern(/^[a-zA-Z0-9]{3,30}$/)
+    .error((errors) => {
+      errors.forEach((err) => {
+        if (err.code === "string.pattern.base") {
+          err.message = "Please specify a valid password.";
+        }
+      });
+      return errors;
+    }),
+});
