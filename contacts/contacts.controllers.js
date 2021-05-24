@@ -1,16 +1,17 @@
-const contactsDB = require("../service/mongooseMethods");
+const contactsDB = require("./contacts.methods");
 const {
   validate,
   createContactSchema,
   updateContactSchema,
   updateStatusContactSchema,
   validateIDSchema,
-} = require("../helpers/validate");
+} = require("../api/helpers/validate");
 
 //GET
 const getContactsController = async (req, res, next) => {
+  const userId = req.userId;
   try {
-    const contacts = await contactsDB.getContacts();
+    const contacts = await contactsDB.getContacts(userId);
     res.status(200).json({
       message: "List of all contacts",
       data: {
@@ -30,7 +31,8 @@ const getContactByIdController =
     const { contactId } = req.params;
 
     try {
-      const contactById = await contactsDB.getContactByID(contactId);
+      const userId = req.userId;
+      const contactById = await contactsDB.getContactByID(userId, contactId);
 
       if (contactById) {
         res.status(200).json({
@@ -58,7 +60,8 @@ const createContactController =
     const body = { name, email, phone, favorite };
 
     try {
-      const newContact = await contactsDB.createContact(body);
+      const userId = req.userId;
+      const newContact = await contactsDB.createContact(userId, body);
 
       if (!name || !email || !phone) {
         res.status(400).json({
@@ -85,7 +88,8 @@ const deleteContactController =
     const { contactId } = req.params;
 
     try {
-      const deletedContact = await contactsDB.deleteContact(contactId);
+      const userId = req.userId;
+      const deletedContact = await contactsDB.deleteContact(userId, contactId);
 
       if (deletedContact !== -1) {
         res.status(200).json({
@@ -109,28 +113,32 @@ const updateContactController =
   async (req, res, next) => {
     const { contactId } = req.params;
     const { name, email, phone } = req.body;
-    const body = { name, email, phone };
 
     try {
-      if (!name || !email || !phone) {
-        res.status(400).json({
-          message: "missing fields",
+      // if (!name || !email || !phone) {
+      //   res.status(400).json({
+      //     message: "missing fields",
+      //   });
+      // }
+
+      const userId = req.userId;
+      const updatedContact = await contactsDB.updateContact(
+        userId,
+        contactId,
+        req.body
+      );
+
+      if (updatedContact) {
+        res.status(200).json({
+          message: "Contact was successfuly updated",
+          data: {
+            updatedContact,
+          },
         });
       } else {
-        const updatedContact = await contactsDB.updateContact(contactId, body);
-
-        if (updatedContact) {
-          res.status(200).json({
-            message: "Contact was successfuly updated",
-            data: {
-              updatedContact,
-            },
-          });
-        } else {
-          res.status(404).json({
-            message: "Not found",
-          });
-        }
+        res.status(404).json({
+          message: "Not found",
+        });
       }
     } catch (e) {
       console.error(e);
@@ -153,7 +161,9 @@ const updateFavoriteController =
           message: "missing field favorite",
         });
       } else {
+        const userId = req.userId;
         const updatedFavorite = await contactsDB.updateStatusContact(
+          userId,
           contactId,
           body
         );
