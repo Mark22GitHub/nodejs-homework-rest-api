@@ -1,10 +1,7 @@
 const express = require("express");
 const usersRouter = express.Router();
 
-const {
-  validate,
-  signUpValidationSchema,
-} = require("../routes/helpers/validate");
+const { validate, signUpValidationSchema } = require("../api/helpers/validate");
 const controller = require("./users.controllers");
 const { checkTokenMiddleware } = require("./users.middlewares");
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("../controller/contactsController");
-const { checkTokenMiddleware } = require("../../users/users.middlewares");
+const controller = require("./contacts.controllers");
+const { checkTokenMiddleware } = require("../users/users.middlewares");
 
 router.get("/", checkTokenMiddleware, controller.getContactsController);
 router.get(

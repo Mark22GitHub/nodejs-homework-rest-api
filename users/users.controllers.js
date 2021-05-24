@@ -1,7 +1,7 @@
-const UserDB = require("../routes/service/schemas/userSchema");
+const UserDB = require("./users.methods");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-const { createVerifiedToken } = require("../routes/service/token");
+const { createVerifiedToken } = require("../api/service/token");
 
 // signup
 const signUpController = async (req, res, next) => {

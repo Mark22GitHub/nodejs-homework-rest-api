@@ -1,4 +1,4 @@
-const ContactSchema = require("../service/schemas/contactSchema");
+const ContactSchema = require("../api/service/schemas/contactSchema");
 
 const getContacts = async (userId) => {
   return await ContactSchema.find({ owner: userId });

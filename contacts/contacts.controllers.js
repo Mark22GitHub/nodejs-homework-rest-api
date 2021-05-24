@@ -1,11 +1,11 @@
-const contactsDB = require("../service/mongooseMethods");
+const contactsDB = require("./contacts.methods");
 const {
   validate,
   createContactSchema,
   updateContactSchema,
   updateStatusContactSchema,
   validateIDSchema,
-} = require("../helpers/validate");
+} = require("../api/helpers/validate");
 
 //GET
 const getContactsController = async (req, res, next) => {

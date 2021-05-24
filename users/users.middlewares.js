@@ -1,5 +1,5 @@
-const { verifyToken } = require("../routes/service/token");
-const ContactDB = require("../routes/service/mongooseMethods");
+const { verifyToken } = require("../api/service/token");
+const ContactDB = require("../contacts/contacts.methods");
 
 const checkTokenMiddleware = async (req, res, next) => {
   try {
