@@ -28,12 +28,21 @@ const signUpController = async (req, res, next) => {
       ...req.body,
       password: hashedPassword,
     });
+
+    //   ==========
+    // const avatar = result.avatarURL;
+    // const avatarURL = avatarCreator(avatar, result.id);
+
+    // const newContact = await UserDB.changeAvatar(result.id, avatarURL);
+    //  =========
+
     res.status(201).json({
       status: "Created",
       code: 201,
       user: {
         email: result.email,
         subscription: result.subscription,
+        avatarURL: result.avatarURL,
       },
     });
   } catch (e) {
@@ -80,6 +89,7 @@ const loginController = async (req, res, next) => {
       user: {
         email: user.email,
         subscription: "starter",
+        avatarURL: user.avatarURL,
       },
     });
   } catch (e) {
@@ -140,9 +150,55 @@ const currentController = async (req, res, next) => {
   }
 };
 
+// =============
+const uploadController = async (req, res, next) => {
+  const { extname } = require("path");
+  const ext = extname(req.file.originalname);
+
+  try {
+    // !!! const newURL = `${req.userId}` + ext;
+    // const newURL = Date.now() + ext;
+
+    // ============
+    // const avatarName = req.file.filename;
+    // const newAvatarURL = `http://localhost:${process.env.PORT}/tmp/${avatarName}`;
+    // const changeAvatarURL = (fileName) => {
+    //   return `http://localhost:3000/images/${fileName}`;
+    // };
+    const avatarName = req.file.filename;
+    // const avatarName = `${req.userId}` + ext;
+    const newAvatarURL = `http://localhost:${process.env.PORT}/avatars/${avatarName}`;
+    // =============
+
+    // const newURL = req.file.filename;
+    const url = await UserDB.changeAvatar(req.userId, newAvatarURL);
+
+    if (url) {
+      res.status(200).json({
+        status: "OK",
+        code: 200,
+        user: {
+          avatarURL: url.avatarURL,
+        },
+      });
+    } else {
+      res.status(401).json({
+        status: "Unauthorized",
+        code: 401,
+        message: "Not authorized",
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+// =================
+
 module.exports = {
   signUpController,
   loginController,
   logoutController,
   currentController,
+  uploadController,
 };
