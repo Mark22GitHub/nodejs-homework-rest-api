@@ -2,10 +2,10 @@ const { join } = require("path");
 const Jimp = require("jimp");
 const FsPromises = require("fs").promises;
 
-const STATIC_FILES_DIR = join(__dirname, "../public");
+const STATIC_FILES_DIR = join(__dirname, "../public/avatars");
 const ORIGINAL_FILES_DIR = join(__dirname, "../tmp");
 
-const compressAvatar = async (req, res, next) => {
+const avatarCompress = async (req, res, next) => {
   const file = req.file;
   if (!file) {
     return next(new Error("No file detected"));
@@ -33,5 +33,5 @@ const compressAvatar = async (req, res, next) => {
 };
 
 module.exports = {
-  compressAvatar,
+  avatarCompress,
 };

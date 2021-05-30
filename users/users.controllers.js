@@ -29,13 +29,6 @@ const signUpController = async (req, res, next) => {
       password: hashedPassword,
     });
 
-    //   ==========
-    // const avatar = result.avatarURL;
-    // const avatarURL = avatarCreator(avatar, result.id);
-
-    // const newContact = await UserDB.changeAvatar(result.id, avatarURL);
-    //  =========
-
     res.status(201).json({
       status: "Created",
       code: 201,
@@ -150,28 +143,12 @@ const currentController = async (req, res, next) => {
   }
 };
 
-// =============
 const uploadController = async (req, res, next) => {
-  const { extname } = require("path");
-  const ext = extname(req.file.originalname);
-
   try {
-    // !!! const newURL = `${req.userId}` + ext;
-    // const newURL = Date.now() + ext;
-
-    // ============
-    // const avatarName = req.file.filename;
-    // const newAvatarURL = `http://localhost:${process.env.PORT}/tmp/${avatarName}`;
-    // const changeAvatarURL = (fileName) => {
-    //   return `http://localhost:3000/images/${fileName}`;
-    // };
     const avatarName = req.file.filename;
-    // const avatarName = `${req.userId}` + ext;
     const newAvatarURL = `http://localhost:${process.env.PORT}/avatars/${avatarName}`;
-    // =============
 
-    // const newURL = req.file.filename;
-    const url = await UserDB.changeAvatar(req.userId, newAvatarURL);
+    const url = await UserDB.updateAvatar(req.userId, newAvatarURL);
 
     if (url) {
       res.status(200).json({
@@ -193,7 +170,6 @@ const uploadController = async (req, res, next) => {
     next(e);
   }
 };
-// =================
 
 module.exports = {
   signUpController,

@@ -16,7 +16,7 @@ const updateToken = async (id, token) => {
   return await UserSchema.updateOne({ _id: id }, { token });
 };
 
-const changeAvatar = async (userId, data) => {
+const updateAvatar = async (userId, data) => {
   return await UserSchema.findByIdAndUpdate(
     { _id: userId },
     { $set: { avatarURL: data } },
@@ -29,5 +29,5 @@ module.exports = {
   findUserByEmail,
   findUserById,
   updateToken,
-  changeAvatar,
+  updateAvatar,
 };
