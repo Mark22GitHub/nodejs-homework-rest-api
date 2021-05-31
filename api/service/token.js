@@ -3,7 +3,7 @@ require("dotenv").config();
 const { JWT_SECRET_KEY } = process.env;
 
 const createVerifiedToken = async (payload) => {
-  const token = await jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: "1h" });
+  const token = await jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: "1d" });
   return `Bearer ${token}`;
 };
 

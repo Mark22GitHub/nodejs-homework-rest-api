@@ -38,6 +38,14 @@ const server = async () => {
     app.use(cors());
     app.use(express.json());
 
+    // static img
+    // app.use(express.static("public"));
+
+    // static img
+    const { join } = require("path");
+    const STATIC_FILES_DIR = join(__dirname, "../public");
+    app.use(express.static(STATIC_FILES_DIR));
+
     app.use("/api/contacts", contactsRouter);
     app.use("/users", usersRouter);
 

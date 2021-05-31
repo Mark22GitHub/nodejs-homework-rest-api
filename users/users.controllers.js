@@ -28,12 +28,14 @@ const signUpController = async (req, res, next) => {
       ...req.body,
       password: hashedPassword,
     });
+
     res.status(201).json({
       status: "Created",
       code: 201,
       user: {
         email: result.email,
         subscription: result.subscription,
+        avatarURL: result.avatarURL,
       },
     });
   } catch (e) {
@@ -80,6 +82,7 @@ const loginController = async (req, res, next) => {
       user: {
         email: user.email,
         subscription: "starter",
+        avatarURL: user.avatarURL,
       },
     });
   } catch (e) {
@@ -140,9 +143,38 @@ const currentController = async (req, res, next) => {
   }
 };
 
+const uploadController = async (req, res, next) => {
+  try {
+    const avatarName = req.file.filename;
+    const newAvatarURL = `http://localhost:${process.env.PORT}/avatars/${avatarName}`;
+
+    const url = await UserDB.updateAvatar(req.userId, newAvatarURL);
+
+    if (url) {
+      res.status(200).json({
+        status: "OK",
+        code: 200,
+        user: {
+          avatarURL: url.avatarURL,
+        },
+      });
+    } else {
+      res.status(401).json({
+        status: "Unauthorized",
+        code: 401,
+        message: "Not authorized",
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
 module.exports = {
   signUpController,
   loginController,
   logoutController,
   currentController,
+  uploadController,
 };
