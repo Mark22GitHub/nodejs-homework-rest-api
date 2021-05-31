@@ -143,6 +143,7 @@ const currentController = async (req, res, next) => {
   }
 };
 
+// update Avatar
 const uploadController = async (req, res, next) => {
   try {
     const avatarName = req.file.filename;
@@ -171,10 +172,34 @@ const uploadController = async (req, res, next) => {
   }
 };
 
+const verifyController = async (req, res, next) => {
+  try {
+    const result = await UserDB.verifyUser(req.params);
+
+    if (result) {
+      res.status(200).json({
+        status: "OK",
+        code: 200,
+        message: "Verification successful",
+      });
+    } else {
+      res.status(404).json({
+        status: "Not Found",
+        code: 404,
+        message: "User not found",
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
 module.exports = {
   signUpController,
   loginController,
   logoutController,
   currentController,
   uploadController,
+  verifyController,
 };

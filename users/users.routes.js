@@ -29,4 +29,6 @@ usersRouter.patch(
   controller.uploadController
 );
 
+usersRouter.get("/verify/:verificationToken", controller.verifyController);
+
 module.exports = usersRouter;

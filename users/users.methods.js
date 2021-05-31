@@ -1,7 +1,11 @@
 const UserSchema = require("../api/service/schemas/userSchema");
+const { nanoid } = require("nanoid");
+const EmailService = require("../api/service/email");
 
 const createUser = async (userData) => {
-  return await UserSchema.create(userData);
+  const verificationToken = nanoid();
+  //send email
+  return await UserSchema.create({ ...userData, verificationToken });
 };
 
 const findUserByEmail = async (query) => {
@@ -24,10 +28,25 @@ const updateAvatar = async (userId, data) => {
   );
 };
 
+// const findByField = async () => {};
+
+const verifyUser = async ({ token }) => {
+  const user = await UserSchema.findByField({ verificationToken: token });
+
+  // (user || !user.verify);
+  if (user && !user.verify) {
+    await user.updateOne({ verify: true, verificationToken: null });
+    return true;
+  }
+
+  return false;
+};
+
 module.exports = {
   createUser,
   findUserByEmail,
   findUserById,
   updateToken,
   updateAvatar,
+  verifyUser,
 };
