@@ -1,10 +1,5 @@
 const UserSchema = require("../api/service/schemas/userSchema");
 const { nanoid } = require("nanoid");
-// const EmailServices = require("../api/service/schemas/userSchema");
-
-// const EmailService = require("../api/service/email");
-// const emailService = new EmailService();
-
 const sendEmail = require("../api/service/email");
 
 const createUser = async (userData) => {
@@ -12,12 +7,10 @@ const createUser = async (userData) => {
   const verificationToken = nanoid();
 
   //send email
-  //   await sendEmail(verificationToken, email);
   try {
     await sendEmail(verificationToken, email);
   } catch (error) {
-    // console.error(error);
-    throw new Error("?Service Unavailable");
+    throw new Error("Service Unavailable");
   }
 
   return await UserSchema.create({ ...userData, verificationToken });
@@ -25,6 +18,9 @@ const createUser = async (userData) => {
 
 const findUserByEmail = async (query) => {
   return await UserSchema.findOne(query);
+  //   if (findUserByEmail.match(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/)) {
+  //     return await UserSchema.findOne(query);
+  //   }
 };
 
 const findUserById = async (id) => {
@@ -42,10 +38,6 @@ const updateAvatar = async (userId, data) => {
     { new: true }
   );
 };
-
-// const findByField = async (field) => {
-//   return UserSchema.findOne(field);
-// };
 
 const verifyUser = async ({ verificationToken }) => {
   const user = await UserSchema.findOne({ verificationToken });

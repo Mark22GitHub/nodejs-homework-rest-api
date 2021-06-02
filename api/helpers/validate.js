@@ -52,3 +52,17 @@ exports.signUpValidationSchema = Joi.object({
     }),
   name: Joi.string(),
 });
+
+exports.validateVerifyEmail = Joi.object({
+  email: Joi.string()
+    .required()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .error((error) => {
+      error.forEach((err) => {
+        if (err) {
+          err.message = "missing required field email";
+        }
+      });
+      return error;
+    }),
+});

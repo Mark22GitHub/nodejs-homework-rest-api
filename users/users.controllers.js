@@ -2,6 +2,7 @@ const UserDB = require("./users.methods");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const { createVerifiedToken } = require("../api/service/token");
+const sendEmail = require("../api/service/email");
 
 // signup
 const signUpController = async (req, res, next) => {
@@ -181,6 +182,7 @@ const uploadController = async (req, res, next) => {
   }
 };
 
+//verify
 const verifyController = async (req, res, next) => {
   const { verificationToken } = req.params;
 
@@ -205,34 +207,34 @@ const verifyController = async (req, res, next) => {
     next(e);
   }
 };
-// =================================================================
-// const UserSchema = require("../api/service/schemas/userSchema");
 
-// const verifyController = async (req, res, next) => {
-//   try {
-//     const { verificationToken } = req.params;
-//     const user = await UserSchema.findOne({ verificationToken });
-//     if (user) {
-//       await user.updateOne({ verify: true, verificationToken: null });
+// resend verify
+const verifyResendingController = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await UserDB.findUserByEmail({ email });
 
-//       return res.status(200).json({
-//         status: "OK",
-//         code: 200,
-//         message: "Verification successful",
-//       });
-//     }
+    if (user && !user.verify) {
+      await sendEmail(user.verificationToken, email);
 
-//     return res.status(404).json({
-//       status: "Not Found",
-//       code: 404,
-//       message: "User not found",
-//     });
-//   } catch (e) {
-//     console.error(e);
-//     next(e);
-//   }
-// };
-// =================================================================
+      res.status(200).json({
+        status: "OK",
+        code: 200,
+        message: "Verification email sent",
+      });
+    } else {
+      res.status(400).json({
+        status: "Bad Request",
+        code: 400,
+        message: "Verification has already been passed",
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
 module.exports = {
   signUpController,
   loginController,
@@ -240,4 +242,5 @@ module.exports = {
   currentController,
   uploadController,
   verifyController,
+  verifyResendingController,
 };
