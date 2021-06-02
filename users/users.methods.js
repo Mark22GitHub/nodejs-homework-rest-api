@@ -43,13 +43,13 @@ const updateAvatar = async (userId, data) => {
   );
 };
 
-const findByField = async (field) => {
-  return UserSchema.findOne(field);
-};
+// const findByField = async (field) => {
+//   return UserSchema.findOne(field);
+// };
 
-const verifyUser = async ({ token }) => {
-  const user = await findByField({ verificationToken: token });
-  // (user && !user.verify);
+const verifyUser = async ({ verificationToken }) => {
+  const user = await UserSchema.findOne({ verificationToken });
+
   if (user) {
     await user.updateOne({ verify: true, verificationToken: null });
     return true;

@@ -63,11 +63,10 @@ const loginController = async (req, res, next) => {
     }
 
     if (!user.verify) {
-      return res.status(400).json({
-        status: "Not verified",
-        code: 400,
-        message: "User is not verified",
-        // message: "Email or password is wrong",
+      return res.status(406).json({
+        status: "Not Acceptable",
+        code: 406,
+        message: "User has not verified",
       });
     }
 
@@ -183,9 +182,10 @@ const uploadController = async (req, res, next) => {
 };
 
 const verifyController = async (req, res, next) => {
-  //   const { verificationToken } = req.params;
+  const { verificationToken } = req.params;
+
   try {
-    const result = await UserDB.verifyUser(req.params);
+    const result = await UserDB.verifyUser({ verificationToken });
 
     if (result) {
       res.status(200).json({
@@ -205,7 +205,34 @@ const verifyController = async (req, res, next) => {
     next(e);
   }
 };
+// =================================================================
+// const UserSchema = require("../api/service/schemas/userSchema");
 
+// const verifyController = async (req, res, next) => {
+//   try {
+//     const { verificationToken } = req.params;
+//     const user = await UserSchema.findOne({ verificationToken });
+//     if (user) {
+//       await user.updateOne({ verify: true, verificationToken: null });
+
+//       return res.status(200).json({
+//         status: "OK",
+//         code: 200,
+//         message: "Verification successful",
+//       });
+//     }
+
+//     return res.status(404).json({
+//       status: "Not Found",
+//       code: 404,
+//       message: "User not found",
+//     });
+//   } catch (e) {
+//     console.error(e);
+//     next(e);
+//   }
+// };
+// =================================================================
 module.exports = {
   signUpController,
   loginController,
