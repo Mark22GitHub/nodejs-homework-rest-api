@@ -57,7 +57,17 @@ const loginController = async (req, res, next) => {
       return res.status(401).json({
         status: "Unauthorized",
         code: 401,
+        // message: "Invalid credentials",
         message: "Email or password is wrong",
+      });
+    }
+
+    if (!user.verify) {
+      return res.status(400).json({
+        status: "Not verified",
+        code: 400,
+        message: "User is not verified",
+        // message: "Email or password is wrong",
       });
     }
 
@@ -173,6 +183,7 @@ const uploadController = async (req, res, next) => {
 };
 
 const verifyController = async (req, res, next) => {
+  //   const { verificationToken } = req.params;
   try {
     const result = await UserDB.verifyUser(req.params);
 

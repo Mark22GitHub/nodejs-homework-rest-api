@@ -50,4 +50,5 @@ exports.signUpValidationSchema = Joi.object({
       });
       return errors;
     }),
+  name: Joi.string(),
 });

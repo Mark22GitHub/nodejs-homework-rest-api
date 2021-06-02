@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcryptjs");
 const gravatar = require("gravatar");
+// const EmailService = require("../email");
 
 const userSchema = new Schema(
   {
@@ -50,5 +51,8 @@ userSchema.methods.validPassword = function (password) {
 };
 
 const UserSchema = mongoose.model("user", userSchema);
+// const EmailServices = new EmailService();
 
 module.exports = UserSchema;
+
+// module.exports = { UserSchema, EmailServices };
