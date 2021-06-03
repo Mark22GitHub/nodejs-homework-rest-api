@@ -1,7 +1,11 @@
 const express = require("express");
 const usersRouter = express.Router();
 
-const { validate, signUpValidationSchema } = require("../api/helpers/validate");
+const {
+  validate,
+  signUpValidationSchema,
+  validateVerifyEmail,
+} = require("../api/helpers/validate");
 const controller = require("./users.controllers");
 const { checkTokenMiddleware } = require("./users.middlewares");
 
@@ -27,6 +31,14 @@ usersRouter.patch(
   avatarUploadMiddleware,
   avatarCompress,
   controller.uploadController
+);
+
+usersRouter.get("/verify/:verificationToken", controller.verifyController);
+
+usersRouter.post(
+  "/verify",
+  validate(validateVerifyEmail),
+  controller.verifyResendingController
 );
 
 module.exports = usersRouter;
